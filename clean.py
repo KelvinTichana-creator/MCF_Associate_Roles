@@ -31,6 +31,7 @@ def main():
         cleaned_data_file = "cleaned_data.xlsx"
         current_directory = os.getcwd()  # Get the current working directory
         cleaned_data_path = os.path.join(current_directory, cleaned_data_file)
+        cleaned_df.to_excel(cleaned_data_file, index=False)
 
         # Create a link to download the cleaned data
         st.markdown(get_download_link(cleaned_data_path, 'cleaned_data.xlsx'), unsafe_allow_html=True)
@@ -65,11 +66,19 @@ def plot_distribution(data, title):
     plt.xlabel("Values")
     plt.ylabel("Frequency")
     return plt
-def get_download_link(file_path, file_name):
-    """Generate a download link for a file."""
-    href = f'<a href="data:file/{file_path};base64,{base64.b64encode(open(file_path, "rb").read()).decode()}" download="{file_name}">Download {file_name}</a>'
-    return href
 
+# Function to create a download link
+def get_download_link(file_path, file_name):
+    with open(file_path, "rb") as f:
+        file_content = f.read()
+    
+    # Encode the file content in base64
+    encoded_content = base64.b64encode(file_content).decode()
+    
+    # Construct the download link with the correct data URL
+    href = f'<a href="data:application/octet-stream;base64,{encoded_content}" download="{file_name}">Download {file_name}</a>'
+    
+    return href
 
 if __name__ == "__main__":
     main()
